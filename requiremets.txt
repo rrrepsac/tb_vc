@@ -1,2 +1,0 @@
-logging==0.5.1.2
-aiogram>=2.11.2

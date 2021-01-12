@@ -7,6 +7,10 @@ Created on Tue Jan 12 15:05:57 2021
 
 import logging
 from aiogram import Bot, Dispatcher, executor, types
+import aiogram
+
+#print(logging.__version__, aiogram.__version__)
+#assert False
 
 API_TOKEN = '1519854172:AAFHk6QYK7ak_YWyMb8uiQtzK83kUSG5VJg'
 
