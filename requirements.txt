@@ -1,2 +1,4 @@
+python==3.8.6
+requests
 aiogram==2.11.2
 aiohttp==3.7.3
