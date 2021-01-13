@@ -34,7 +34,7 @@ async def send_welcome(message: types.Message):
     button2 = KeyboardButton('button2')
     button3 = KeyboardButton('button1')
     button4 = KeyboardButton('button2')
-    keyboard1 = ReplyKeyboardMarkup(resize|_keyboard=True)
+    keyboard1 = ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard1.add(button1)
     keyboard1.add(button2)
     keyboard1.row(button3, button4)
