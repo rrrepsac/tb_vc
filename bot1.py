@@ -82,7 +82,12 @@ async def comm3(message: types.Message):
 async def echo(message: types.Message):
     # old style:
     # await bot.send_message(message.chat.id, message.text)
-
-    await message.answer(message.text + message.date + message.photo, message.from_user)
+    
+    mes_to_answ = message.text
+    if message.photo is not None:
+        mes_to_answ += str(len(message.photo))
+    #mes_to_answ += message.from.first_name
+    mes_to_answ += '_' + str(message.date)
+    await message.answer(mes_to_answ)
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
