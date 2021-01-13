@@ -8,7 +8,10 @@ Created on Tue Jan 12 15:05:57 2021
 import logging
 from aiogram import Bot, Dispatcher, executor, types
 import aiogram
-
+from aiogram.types import ReplyKeyboardRemove, \
+    ReplyKeyboardMarkup, KeyboardButton, \
+    InlineKeyboardMarkup, InlineKeyboardButton
+    
 #print(logging.__version__, aiogram.__version__)
 #assert False
 
@@ -27,9 +30,14 @@ async def send_welcome(message: types.Message):
     """
     This handler will be called when user sends `/start` or `/help` command
     """
-    buttons = [['butt1'],['butt2']]
-    keyboard1 = aiogram.types.inline_keyboard.InlineKeyboardMarkup(buttons)
-#    keyboard1.add(buttons)
+    button1 = KeyboardButton('button1')
+    button2 = KeyboardButton('button2')
+    button3 = KeyboardButton('button1')
+    button4 = KeyboardButton('button2')
+    keyboard1 = ReplyKeyboardMarkup(resize|_keyboard=True)
+    keyboard1.add(button1)
+    keyboard1.add(button2)
+    keyboard1.row(button3, button4)
     await message.reply("Hi!\nI'm EchoBot!\nPowered by aiogram.",\
                         reply_markup=keyboard1)
 @dp.message_handler(commands=['1'])
@@ -48,6 +56,22 @@ async def comm2(message: types.Message):
     keyboard1 = aiogram.types.inline_keyboard.InlineKeyboardMarkup(buttons)
 
     await message.answer(message.text, reply_markup=keyboard1)
+@dp.message_handler(commands=['5'])
+async def comm5(message: types.Message):
+    # old style:
+    # await bot.send_message(message.chat.id, message.text)
+    buttons = ['5butt1','5butt2']
+    keyboard1 = aiogram.types.inline_keyboard.InlineKeyboardMarkup(buttons)
+
+    await message.answer(message.text, reply_markup=keyboard1)
+@dp.message_handler(commands=['6'])
+async def comm6(message: types.Message):
+    # old style:
+    # await bot.send_message(message.chat.id, message.text)
+    buttons = ['6butt1','6butt2']
+    keyboard1 = aiogram.types.inline_keyboard.InlineKeyboardMarkup(buttons)
+
+    await message.answer(message.text, reply_markup=(keyboard1))
 @dp.message_handler(commands=['3'])
 async def comm3(message: types.Message):
     # old style:
