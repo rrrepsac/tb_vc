@@ -27,11 +27,27 @@ async def send_welcome(message: types.Message):
     """
     This handler will be called when user sends `/start` or `/help` command
     """
-    keyboard1 = aiogram.types.inline_keyboard.InlineKeyboardMarkup()
-    buttons = ['butt1','butt2']
-    keyboard1.add(buttons)
+    buttons = [['butt1'],['butt2']]
+    keyboard1 = aiogram.types.inline_keyboard.InlineKeyboardMarkup(buttons)
+#    keyboard1.add(buttons)
     await message.reply("Hi!\nI'm EchoBot!\nPowered by aiogram.",\
                         reply_markup=keyboard1)
+@dp.message_handler(commands=['1'])
+async def comm1(message: types.Message):
+    # old style:
+    # await bot.send_message(message.chat.id, message.text)
+
+    buttons = [['1butt1'],['1butt2']]
+    keyboard1 = aiogram.types.inline_keyboard.InlineKeyboardMarkup(buttons)
+    await message.answer(message.text, reply_markup=(keyboard1))
+@dp.message_handler(commands=['2'])
+async def comm2(message: types.Message):
+    # old style:
+    # await bot.send_message(message.chat.id, message.text)
+    buttons = [['2butt1'],['2butt2']]
+    keyboard1 = aiogram.types.inline_keyboard.InlineKeyboardMarkup(buttons)
+
+    await message.answer(message.text, reply_markup=keyboard1)
 @dp.message_handler()
 async def echo(message: types.Message):
     # old style:
