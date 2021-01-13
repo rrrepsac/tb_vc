@@ -21,12 +21,22 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
+
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
     """
     This handler will be called when user sends `/start` or `/help` command
     """
-    await message.reply("Hi!\nI'm EchoBot!\nPowered by aiogram.")
-    
+    keyboard1 = aiogram.types.inline_keyboard.InlineKeyboardMarkup()
+    buttons = ['butt1','butt2']
+    keyboard1.add(buttons)
+    await message.reply("Hi!\nI'm EchoBot!\nPowered by aiogram.",\
+                        reply_markup=keyboard1)
+@dp.message_handler()
+async def echo(message: types.Message):
+    # old style:
+    # await bot.send_message(message.chat.id, message.text)
+
+    await message.answer(message.text)
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
