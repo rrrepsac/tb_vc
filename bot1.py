@@ -82,8 +82,11 @@ async def comm3(message: types.Message):
 async def echo(message: types.Message):
     # old style:
     # await bot.send_message(message.chat.id, message.text)
-    
-    mes_to_answ = message.text
+    mes_to_answ = ''
+    if message.text is not None:
+        mes_to_answ += message.text
+    else:
+        mes_to_answ += 'not text_mess '
     if message.photo is not None:
         mes_to_answ += str(len(message.photo))
     #mes_to_answ += message.from.first_name
