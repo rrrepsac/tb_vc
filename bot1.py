@@ -48,6 +48,12 @@ async def comm2(message: types.Message):
     keyboard1 = aiogram.types.inline_keyboard.InlineKeyboardMarkup(buttons)
 
     await message.answer(message.text, reply_markup=keyboard1)
+@dp.message_handler(commands=['3'])
+async def comm3(message: types.Message):
+    # old style:
+    # await bot.send_message(message.chat.id, message.text)
+
+    await message.answer('comm3 answer!')
 @dp.message_handler()
 async def echo(message: types.Message):
     # old style:
