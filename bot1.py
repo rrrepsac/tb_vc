@@ -39,9 +39,9 @@ print(f'wh_url={WEBHOOK_URL}')
 
 
 #webapp setting
-
-WEBAPP_HOST = '0.0.0.0'
-WEBAPP_PORT = int(os.environ.get('PORT', '8443'))
+if webhook_using:
+    WEBAPP_HOST = '0.0.0.0'
+    WEBAPP_PORT = os.environ['PORT']
 
 
 
