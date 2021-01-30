@@ -32,14 +32,14 @@ else:
 
 #webhook setting
 
-WEBHOOK_HOST = ''
-WEBHOOK_PATH = ''#'webhook/'+API_TOKEN
+WEBHOOK_HOST = 'https://telegabot67.heroku.com'
+WEBHOOK_PATH = '/webhook/'+API_TOKEN
 WEBHOOK_URL = WEBHOOK_HOST + WEBHOOK_PATH
 
 
 #webapp setting
 
-WEBAPP_HOST = 'localhost'
+WEBAPP_HOST = '0.0.0.0'
 WEBAPP_PORT = 3001
 
 
