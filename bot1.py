@@ -35,8 +35,7 @@ else:
 WEBHOOK_HOST = 'https://telegabot67.heroku.com'
 WEBHOOK_PATH = '/webhook/'+API_TOKEN
 WEBHOOK_URL = WEBHOOK_HOST + WEBHOOK_PATH
-logging.Message(f'wh_url={WEBHOOK_URL}')
-logging.warning(f'wh_url={WEBHOOK_URL}')
+print(f'wh_url={WEBHOOK_URL}')
 
 
 #webapp setting
@@ -159,6 +158,7 @@ async def voice_reply(message: types.Message):
 if __name__ == '__main__':
     if webhook_using:
         logging.warning(f'trying start webhook:{WEBHOOK_PATH}, {WEBAPP_HOST}, {WEBAPP_PORT}')
+        print(f'trying start webhook:{WEBHOOK_PATH}, {WEBAPP_HOST}, {WEBAPP_PORT}')
         start_webhook(dp, WEBHOOK_PATH, on_startup=on_startup,
                       on_shutdown=on_shutdown, skip_updates=False,
                       host=WEBAPP_HOST, port=WEBAPP_PORT)
