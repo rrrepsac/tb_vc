@@ -29,7 +29,6 @@ if os.name == 'posix':
 else:
     with open('API.TOKEN', 'r') as f:
         API_TOKEN = f.readline()
-API_TOKEN = '1519854172:AAFHk6QYK7ak_YWyMb8uiQtzK83kUSG5VJg'
 
 #webhook setting
 
