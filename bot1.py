@@ -8,8 +8,8 @@ Created on Tue Jan 12 15:05:57 2021
 import logging
 from aiogram import Bot, executor, types
 from aiogram.dispatcher import Dispatcher
-from aiogram.dispatcher.webhook import SendMessage
-from aiogram.contrib.middlewares.logging import LoggingMiddleware
+#from aiogram.dispatcher.webhook import SendMessage
+#from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from aiogram.utils.executor import start_webhook
 import aiogram
 from aiogram.types import ReplyKeyboardRemove, \
@@ -51,8 +51,8 @@ logging.basicConfig(level=logging.INFO)
 # Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
-if webhook_using:
-    dp.middleware.setup(LoggingMiddleWare())
+#if webhook_using:
+#    dp.middleware.setup(LoggingMiddleWare())
 
 
 async def on_startup(dp):
