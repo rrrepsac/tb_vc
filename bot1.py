@@ -24,11 +24,11 @@ import os
 
 webhook_using = False
 if os.name == 'posix':
-    webhook_using = True
-    API_TOKEN = os.eviron['API_TOKEN']
+    webhook_using = False
+    API_TOKEN = os.environ['API_TOKEN']
 else:
     with open('API.TOKEN', 'r') as f:
-        API_TOKEN = f.readline()
+        API_TOKEN = f.readline().split()[0]
 
 #webhook setting
 
