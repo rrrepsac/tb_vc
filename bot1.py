@@ -78,7 +78,7 @@ async def send_welcome(message: types.Message):
     keyboard1.add(button1)
     keyboard1.add(button2)
     keyboard1.row(button3, button4)
-    await message.reply("Hi!\nI'm EchoBot!\nPowered by aiogram.",\
+    await message.reply(f"Hi!\nI'm EchoBot!\nPowered by aiogram.os.name={os.name}",\
                         reply_markup=keyboard1)
 @dp.message_handler(commands=['1'])
 async def comm1(message: types.Message):
