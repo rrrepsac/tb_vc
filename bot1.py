@@ -24,7 +24,7 @@ import os
 
 webhook_using = False
 if os.name == 'posix':
-    webhook_using = False
+    webhook_using = True
     API_TOKEN = os.environ['API_TOKEN']
 else:
     with open('API.TOKEN', 'r') as f:
