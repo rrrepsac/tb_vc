@@ -22,6 +22,13 @@ import os
 #print(logging.__version__, aiogram.__version__)
 #assert False
 
+webhook_using = False
+if os.name == 'posix':
+    webhook_using = True
+    API_TOKEN = os.eviron['API_TOKEN']
+else:
+    with open('API.TOKEN', 'r') as f:
+        API_TOKEN = f.readline()
 API_TOKEN = '1519854172:AAFHk6QYK7ak_YWyMb8uiQtzK83kUSG5VJg'
 
 #webhook setting
@@ -36,8 +43,6 @@ WEBHOOK_URL = WEBHOOK_HOST + WEBHOOK_PATH
 WEBAPP_HOST = 'localhost'
 WEBAPP_PORT = 3001
 
-print(os.name)
-webhook_using = False
 
 
 # Configure logging
