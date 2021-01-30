@@ -6,16 +6,39 @@ Created on Tue Jan 12 15:05:57 2021
 """
 
 import logging
-from aiogram import Bot, Dispatcher, executor, types
+from aiogram import Bot, executor, types
+from aiogram.dispatcher import Dispatcher
+from aiogram.dispatcher.webhook import SendMessage
+from aiogram.contrib.middlewares.logging import LoggingMiddleware
+from aiogram.utils.executor import start_webhook
 import aiogram
 from aiogram.types import ReplyKeyboardRemove, \
     ReplyKeyboardMarkup, KeyboardButton, \
     InlineKeyboardMarkup, InlineKeyboardButton
-    
+from PIL import Image
+import io
+import os
+
 #print(logging.__version__, aiogram.__version__)
 #assert False
 
 API_TOKEN = '1519854172:AAFHk6QYK7ak_YWyMb8uiQtzK83kUSG5VJg'
+
+#webhook setting
+
+WEBHOOK_HOST = ''
+WEBHOOK_PATH = ''#'webhook/'+API_TOKEN
+WEBHOOK_URL = WEBHOOK_HOST + WEBHOOK_PATH
+
+
+#webapp setting
+
+WEBAPP_HOST = 'localhost'
+WEBAPP_PORT = 3001
+
+print(os.name)
+webhook_using = False
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -23,7 +46,24 @@ logging.basicConfig(level=logging.INFO)
 # Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
+if webhook_using:
+    dp.middleware.setup(LoggingMiddleWare())
 
+
+async def on_startup(dp):
+    await bot.set_webhook(WEBHOOK_URL)
+    
+    
+async def on_shutdown(dp):
+    logging.warning('Shutting down...')
+    
+    await bot.delete_webhook()
+    
+    await dp.storage.close()
+    await dp.storage.wait_closed()
+    
+    logging.warning('Bye-bye!')
+    
 
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
@@ -92,5 +132,29 @@ async def echo(message: types.Message):
     #mes_to_answ += message.from.first_name
     mes_to_answ += '_' + str(message.date)
     await message.answer(mes_to_answ)
+@dp.message_handler(content_types=['photo'])
+async def voice_reply(message: types.Message):
+    await message.photo[-1].download('test.jpg')
+    print(fid:=message.photo[-1].file_id)
+    await message.answer(f'Get photo! {fid}')
+    #await message.reply_photo(photo=
+    #'AgACAgIAAxkBAAOrYBSKWkV8E2pfrUSBDA_M66QVEIYAAiCxMRtqrqhICQ9Xs-KAc8877ReYLgADAQADAgADeAADRE4GAAEeBA')
+    img = Image.open('220_facades.png')
+    print('PIL opened')
+    bimg = io.BytesIO()
+    bimg.name = 'f.png'
+    print(f'.{(bimg)}')
+    img.save(bimg, 'png')
+    img.save('3.png', 'png')
+    print(f'.{(bimg)}')
+    bimg.seek(0)
+    await message.reply_photo(photo=bimg)
+    print('.')
 if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True)
+    if webhook_using:
+        start_webhook(dp, WEBHOOK_PATH, on_startup=on_startup,
+                      on_shutdown=on_shutdown, skip_updates=False,
+                      host=WEBAPP_HOST, port=WEBAPP_PORT)
+    else:
+        executor.start_polling(dp, skip_updates=True)
+        
