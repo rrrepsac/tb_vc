@@ -15,6 +15,7 @@ import aiogram
 from aiogram.types import ReplyKeyboardRemove, \
     ReplyKeyboardMarkup, KeyboardButton, \
     InlineKeyboardMarkup, InlineKeyboardButton
+from urllib.parse import urljoin
 from PIL import Image
 import io
 import os
@@ -33,17 +34,16 @@ else:
 #webhook setting
 
 WEBHOOK_HOST = 'https://telegabot67.heroku.com'
-WEBHOOK_PATH = '/webhook/'+API_TOKEN
-WEBHOOK_URL = WEBHOOK_HOST + WEBHOOK_PATH
-print(f'wh_url={WEBHOOK_URL}')
+WEBHOOK_PATH = '/webhook/sdfsdfasfs'#+API_TOKEN
+WEBHOOK_URL = urljoin(WEBHOOK_HOST, WEBHOOK_PATH)
+print(f'wh_url=\n{WEBHOOK_URL}, type({type(WEBHOOK_URL)}) ?\n{WEBHOOK_HOST + WEBHOOK_PATH}')
 
 
 #webapp setting
 if webhook_using:
     WEBAPP_HOST = '0.0.0.0'
-    WEBAPP_PORT = os.environ['PORT']
-
-
+    WEBAPP_PORT = os.getenv('PORT')
+    print(WEBAPP_PORT)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -56,6 +56,7 @@ dp = Dispatcher(bot)
 
 
 async def on_startup(dp):
+    await bot.delete_webhook()
     await bot.set_webhook(WEBHOOK_URL)
     
     
@@ -138,7 +139,7 @@ async def echo(message: types.Message):
     mes_to_answ += '_' + str(message.date)
     await message.answer(mes_to_answ)
 @dp.message_handler(content_types=['photo'])
-async def voice_reply(message: types.Message):
+async def photo_reply(message: types.Message):
     await message.photo[-1].download('test.jpg')
     print(fid:=message.photo[-1].file_id)
     await message.answer(f'Get photo! {fid}')
@@ -160,7 +161,7 @@ if __name__ == '__main__':
         logging.warning(f'trying start webhook:{WEBHOOK_PATH}, {WEBAPP_HOST}, {WEBAPP_PORT}')
         print(f'trying start webhook:{WEBHOOK_PATH}, {WEBAPP_HOST}, {WEBAPP_PORT}')
         start_webhook(dp, WEBHOOK_PATH, on_startup=on_startup,
-                      on_shutdown=on_shutdown, skip_updates=False,
+                      on_shutdown=on_shutdown, skip_updates=True,
                       host=WEBAPP_HOST, port=WEBAPP_PORT)
     else:
         executor.start_polling(dp, skip_updates=True)
