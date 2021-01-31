@@ -9,8 +9,9 @@ import logging
 from aiogram import Bot, executor, types
 from aiogram.dispatcher import Dispatcher
 #from aiogram.dispatcher.webhook import SendMessage
-#from aiogram.contrib.middlewares.logging import LoggingMiddleware
+from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from aiogram.utils.executor import start_webhook
+from aiohttp import ClientSession
 import aiogram
 from aiogram.types import ReplyKeyboardRemove, \
     ReplyKeyboardMarkup, KeyboardButton, \
@@ -50,9 +51,10 @@ logging.basicConfig(level=logging.INFO)
 
 # Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN)
+session = ClientSession()
 dp = Dispatcher(bot)
-#if webhook_using:
-#    dp.middleware.setup(LoggingMiddleWare())
+if webhook_using:
+    dp.middleware.setup(LoggingMiddleware())
 
 
 async def on_startup(dp):

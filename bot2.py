@@ -12,17 +12,21 @@ from random import choice
 import aiohttp
 from aiohttp import web
 from aiogram import Bot, Dispatcher, types
-from aiogram.utils import context
+#from aiogram.utils import context
 from aiogram.dispatcher.webhook import get_new_configured_app
 from lxml import etree
 
 TOKEN = os.getenv('TOKEN', '')  # Press "Reveal Config Vars" in settings tab on Heroku and set TOKEN variable
-PROJECT_NAME = os.getenv('PROJECT_NAME', 'aiogram-example')  # Set it as you've set TOKEN env var
-
+if not TOKEN:
+    with open('API.TOKEN', 'r') as f:
+        TOKEN = f.readline().split()[0]
+PROJECT_NAME = os.getenv('PROJECT_NAME', '')  # Set it as you've set TOKEN env var
+if not PROJECT_NAME:
+    PROJECT_NAME = 'telegabot67'
 WEBHOOK_HOST = f'https://{PROJECT_NAME}.herokuapp.com/'  # Enter here your link from Heroku project settings
 WEBHOOK_URL_PATH = '/webhook/' + TOKEN
 WEBHOOK_URL = urljoin(WEBHOOK_HOST, WEBHOOK_URL_PATH)
-print(WEBHOOK_HOST, WEBHOOK_URL_PATH, WEBHOOK_URL)
+print(WEBHOOK_HOST, WEBHOOK_URL_PATH, WEBHOOK_URL, sep='\n')
 # Inline keyboard initialization with one refresh button
 inline_keyboard = types.InlineKeyboardMarkup()
 random_button = types.InlineKeyboardButton('Получить случайную цитату', callback_data='refresh')
@@ -77,5 +81,5 @@ if __name__ == '__main__':
     # Create aiohttp.web.Application with configured route for webhook path
     app = get_new_configured_app(dispatcher=dp, path=WEBHOOK_URL_PATH)
     app.on_startup.append(on_startup)
-    dp.loop.set_task_factory(context.task_factory)
+    #dp.loop.set_task_factory(context.task_factory)
     web.run_app(app, host='0.0.0.0', port=os.getenv('PORT'))  # Heroku stores port you have to listen in your app
