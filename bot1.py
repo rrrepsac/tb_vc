@@ -56,14 +56,15 @@ dp = Dispatcher(bot)
 
 
 async def on_startup(dp):
-    await bot.delete_webhook()
+    logging.warning('starting webhook')
+   # await bot.delete_webhook()
     await bot.set_webhook(WEBHOOK_URL)
     
     
 async def on_shutdown(dp):
     logging.warning('Shutting down...')
     
-    await bot.delete_webhook()
+#    await bot.delete_webhook()
     
     await dp.storage.close()
     await dp.storage.wait_closed()
@@ -158,11 +159,15 @@ async def photo_reply(message: types.Message):
     print('.')
 if __name__ == '__main__':
     if webhook_using:
-        logging.warning(f'trying start webhook:{WEBHOOK_PATH}, {WEBAPP_HOST}, {WEBAPP_PORT}')
-        print(f'trying start webhook:{WEBHOOK_PATH}, {WEBAPP_HOST}, {WEBAPP_PORT}')
-        start_webhook(dp, WEBHOOK_PATH, on_startup=on_startup,
-                      on_shutdown=on_shutdown, skip_updates=True,
-                      host=WEBAPP_HOST, port=WEBAPP_PORT)
+        logging.warning(f'---->trying start webhook:{WEBHOOK_PATH}, {WEBAPP_HOST}, {WEBAPP_PORT}')
+        print(f'+++++>trying start webhook:{WEBHOOK_PATH}, {WEBAPP_HOST}, {WEBAPP_PORT}')
+        start_webhook(dispatcher=dp,
+                      webhook_path=WEBHOOK_PATH,
+                      on_startup=on_startup,
+                      on_shutdown=on_shutdown,
+                      skip_updates=True,
+                      host=WEBAPP_HOST,
+                      port=WEBAPP_PORT)
     else:
         executor.start_polling(dp, skip_updates=True)
         
