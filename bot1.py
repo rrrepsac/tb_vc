@@ -25,7 +25,7 @@ import os
 webhook_using = False
 if os.name == 'posix':
     webhook_using = True
-    API_TOKEN = os.getenv['API_TOKEN','123213:SDFSDGSD_ASDKKDF']
+    API_TOKEN = os.getenv('API_TOKEN','123213:SDFSDGSD_ASDKKDF')
 else:
     with open('API.TOKEN', 'r') as f:
         API_TOKEN = f.readline().split()[0]
