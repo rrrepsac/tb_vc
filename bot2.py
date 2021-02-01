@@ -21,6 +21,15 @@ WEBHOOK_HOST = 'https://telegabot67.heroku.com'
 WEBHOOK_PATH = '/webhook/api_t'
 WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
 
+
+updater = Updater(TOKEN)
+# add handlers
+updater.start_webhook(listen="0.0.0.0",
+                      port=PORT,
+                      url_path=TOKEN)
+updater.bot.set_webhook("https://<appname>.herokuapp.com/" + TOKEN)
+updater.idle()
+
 # webserver settings
 WEBAPP_HOST = '0.0.0.0'  # or ip
 WEBAPP_PORT = os.getenv('PORT', 'no_port')

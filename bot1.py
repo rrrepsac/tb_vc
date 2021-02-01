@@ -21,13 +21,11 @@ from PIL import Image
 import io
 import os
 
-#print(logging.__version__, aiogram.__version__)
-#assert False
 
 webhook_using = False
 if os.name == 'posix':
     webhook_using = True
-    API_TOKEN = os.environ['API_TOKEN']
+    API_TOKEN = os.getenv['API_TOKEN','123213:SDFSDGSD_ASDKKDF']
 else:
     with open('API.TOKEN', 'r') as f:
         API_TOKEN = f.readline().split()[0]
@@ -35,7 +33,7 @@ else:
 #webhook setting
 
 WEBHOOK_HOST = 'https://telegabot67.heroku.com'
-WEBHOOK_PATH = '/webhook/sdfsdfasfs'#+API_TOKEN
+WEBHOOK_PATH = '/webhook/'+API_TOKEN
 WEBHOOK_URL = urljoin(WEBHOOK_HOST, WEBHOOK_PATH)
 print(f'wh_url=\n{WEBHOOK_URL}, type({type(WEBHOOK_URL)}) ?\n{WEBHOOK_HOST + WEBHOOK_PATH}')
 
@@ -51,118 +49,41 @@ logging.basicConfig(level=logging.INFO)
 
 # Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN)
-session = ClientSession()
 dp = Dispatcher(bot)
 if webhook_using:
     dp.middleware.setup(LoggingMiddleware())
 
 
 async def on_startup(dp):
-    logging.warning('starting webhook')
+    logging.warning('++++starting webhook')
    # await bot.delete_webhook()
     await bot.set_webhook(WEBHOOK_URL)
     
     
 async def on_shutdown(dp):
-    logging.warning('Shutting down...')
+    logging.warning('+++Shutting down...')
     
 #    await bot.delete_webhook()
     
     await dp.storage.close()
     await dp.storage.wait_closed()
     
-    logging.warning('Bye-bye!')
+    logging.warning('+++Bye-bye!')
     
 
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
-    """
-    This handler will be called when user sends `/start` or `/help` command
-    """
-    button1 = KeyboardButton('button1')
-    button2 = KeyboardButton('button2')
-    button3 = KeyboardButton('button1')
-    button4 = KeyboardButton('button2')
-    keyboard1 = ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard1.add(button1)
-    keyboard1.add(button2)
-    keyboard1.row(button3, button4)
-    await message.reply(f"Hi!\nI'm EchoBot!\nPowered by aiogram.os.name={os.name}",\
-                        reply_markup=keyboard1)
-@dp.message_handler(commands=['1'])
-async def comm1(message: types.Message):
-    # old style:
-    # await bot.send_message(message.chat.id, message.text)
-
-    buttons = [['1butt1'],['1butt2']]
-    keyboard1 = aiogram.types.inline_keyboard.InlineKeyboardMarkup(buttons)
-    await message.answer(message.text, reply_markup=(keyboard1))
-@dp.message_handler(commands=['2'])
-async def comm2(message: types.Message):
-    # old style:
-    # await bot.send_message(message.chat.id, message.text)
-    buttons = [['2butt1'],['2butt2']]
-    keyboard1 = aiogram.types.inline_keyboard.InlineKeyboardMarkup(buttons)
-
-    await message.answer(message.text, reply_markup=keyboard1)
-@dp.message_handler(commands=['5'])
-async def comm5(message: types.Message):
-    # old style:
-    # await bot.send_message(message.chat.id, message.text)
-    buttons = ['5butt1','5butt2']
-    keyboard1 = aiogram.types.inline_keyboard.InlineKeyboardMarkup(buttons)
-
-    await message.answer(message.text, reply_markup=keyboard1)
-@dp.message_handler(commands=['6'])
-async def comm6(message: types.Message):
-    # old style:
-    # await bot.send_message(message.chat.id, message.text)
-    buttons = ['6butt1','6butt2']
-    keyboard1 = aiogram.types.inline_keyboard.InlineKeyboardMarkup(buttons)
-
-    await message.answer(message.text, reply_markup=(keyboard1))
-@dp.message_handler(commands=['3'])
-async def comm3(message: types.Message):
-    # old style:
-    # await bot.send_message(message.chat.id, message.text)
-
-    await message.answer('comm3 answer!')
+    await message.reply(f"Hi!\nI'm EchoBot!\nos.name={os.name}")
 @dp.message_handler()
 async def echo(message: types.Message):
     # old style:
     # await bot.send_message(message.chat.id, message.text)
     mes_to_answ = ''
-    if message.text is not None:
-        mes_to_answ += message.text
-    else:
-        mes_to_answ += 'not text_mess '
-    if message.photo is not None:
-        mes_to_answ += str(len(message.photo))
-    #mes_to_answ += message.from.first_name
-    mes_to_answ += '_' + str(message.date)
+    mes_to_answ += ' date: ' + str(message.date)
     await message.answer(mes_to_answ)
-@dp.message_handler(content_types=['photo'])
-async def photo_reply(message: types.Message):
-    await message.photo[-1].download('test.jpg')
-    print(fid:=message.photo[-1].file_id)
-    await message.answer(f'Get photo! {fid}')
-    #await message.reply_photo(photo=
-    #'AgACAgIAAxkBAAOrYBSKWkV8E2pfrUSBDA_M66QVEIYAAiCxMRtqrqhICQ9Xs-KAc8877ReYLgADAQADAgADeAADRE4GAAEeBA')
-    img = Image.open('220_facades.png')
-    print('PIL opened')
-    bimg = io.BytesIO()
-    bimg.name = 'f.png'
-    print(f'.{(bimg)}')
-    img.save(bimg, 'png')
-    img.save('3.png', 'png')
-    print(f'.{(bimg)}')
-    bimg.seek(0)
-    await message.reply_photo(photo=bimg)
-    print('.')
 if __name__ == '__main__':
     if webhook_using:
         logging.warning(f'---->trying start webhook:{WEBHOOK_PATH}, {WEBAPP_HOST}, {WEBAPP_PORT}')
-        print(f'+++++>trying start webhook:{WEBHOOK_PATH}, {WEBAPP_HOST}, {WEBAPP_PORT}')
         start_webhook(dispatcher=dp,
                       webhook_path=WEBHOOK_PATH,
                       on_startup=on_startup,
