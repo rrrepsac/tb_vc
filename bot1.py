@@ -37,7 +37,6 @@ WEBHOOK_PATH = '/webhook/'+API_TOKEN
 WEBHOOK_URL = urljoin(WEBHOOK_HOST, WEBHOOK_PATH)
 print(f'wh_url=\n{WEBHOOK_URL}, type({type(WEBHOOK_URL)}) ?\n{WEBHOOK_HOST + WEBHOOK_PATH}')
 
-
 #webapp setting
 if webhook_using:
     WEBAPP_HOST = '0.0.0.0'
@@ -53,18 +52,15 @@ dp = Dispatcher(bot)
 if webhook_using:
     dp.middleware.setup(LoggingMiddleware())
 
-
 async def on_startup(dp):
     logging.warning('++++starting webhook')
    # await bot.delete_webhook()
-    await bot.set_webhook(WEBHOOK_URL)
-    
+    #await bot.set_webhook(WEBHOOK_URL)
     
 async def on_shutdown(dp):
     logging.warning('+++Shutting down...')
     
 #    await bot.delete_webhook()
-    
     await dp.storage.close()
     await dp.storage.wait_closed()
     
@@ -84,6 +80,7 @@ async def echo(message: types.Message):
 if __name__ == '__main__':
     if webhook_using:
         logging.warning(f'---->trying start webhook:{WEBHOOK_PATH}, {WEBAPP_HOST}, {WEBAPP_PORT}')
+        bot.set_webhook(WEBHOOK_URL)    
         start_webhook(dispatcher=dp,
                       webhook_path=WEBHOOK_PATH,
                       on_startup=on_startup,
