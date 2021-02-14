@@ -55,7 +55,7 @@ if webhook_using:
 async def on_startup(dp):
     logging.warning('++++starting webhook')
    # await bot.delete_webhook()
-    #await bot.set_webhook(WEBHOOK_URL)
+    await bot.set_webhook(WEBHOOK_URL)
     
 async def on_shutdown(dp):
     logging.warning('+++Shutting down...')
@@ -77,10 +77,12 @@ async def echo(message: types.Message):
     mes_to_answ = ''
     mes_to_answ += ' date: ' + str(message.date)
     await message.answer(mes_to_answ)
+async def start_wh():
+    await bot.set_webhook(WEBHOOK_URL)
 if __name__ == '__main__':
     if webhook_using:
         logging.warning(f'---->trying start webhook:{WEBHOOK_PATH}, {WEBAPP_HOST}, {WEBAPP_PORT}')
-        bot.set_webhook(WEBHOOK_URL)    
+        start_wh()    
         start_webhook(dispatcher=dp,
                       webhook_path=WEBHOOK_PATH,
                       on_startup=on_startup,
