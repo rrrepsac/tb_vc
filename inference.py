@@ -12,7 +12,7 @@ from torch.nn import ModuleList, InstanceNorm2d
 import numpy as np
 
 
-from matplotlib import pyplot as plt
+#from matplotlib import pyplot as plt
 from pathlib import Path
 from torch.nn import Sequential, ReLU, Conv2d, AvgPool2d, ReflectionPad2d,\
 BatchNorm2d, InstanceNorm2d, UpsamplingNearest2d
@@ -21,6 +21,24 @@ BatchNorm2d, InstanceNorm2d, UpsamplingNearest2d
 
 from PIL import Image
 import time
+
+transform = transforms.Compose([
+                                transforms.Resize(256),
+                                transforms.ToTensor(),
+                                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+])
+
+def recover_image(img):
+    return (
+        (
+            img *
+            np.array([0.229, 0.224, 0.225]).reshape((1, 3, 1, 1)) +
+            np.array([0.485, 0.456, 0.406]).reshape((1, 3, 1, 1))
+        ).transpose(0, 2, 3, 1) *
+        255.
+    ).clip(0, 255).astype(np.uint8)
+
+
 #DEVICE = (torch.device("cpu"), torch.device("cuda"))[torch.cuda.is_available()]
 DEVICE = torch.device('cpu')
 
@@ -238,7 +256,7 @@ class Pyramid(nn.Module):
     return last_out
 
 
-class TransformerMultiStyleNet(torch.nn.Module):
+class JohnsonMultiStyleNet(torch.nn.Module):
     def __init__(self, style_number = 1):
         super().__init__()
         # Initial convolution layers
@@ -304,27 +322,27 @@ class ResidualMultiStyleBlock(torch.nn.Module):
         out = self.in2[style](self.conv2(out))
         out = out + residual
         return out
-def test():
-    style_model = TransformerMultiStyleNet(6)
+def test(style_choice=0):
+    style_model = JohnsonMultiStyleNet(6)
     style_model.eval()
     img = Image.open(r'test.jpg')
-    plt.imshow(img)
-    tr = transform = transforms.Compose([
-                                    transforms.Resize(512),
-                                    transforms.ToTensor(),
-                                    transforms.Normalize([0.485, 0.456, 0.406],[0.229, 0.224, 0.225])
-    ])
-    img_t = tr(img).unsqueeze(0)
-    with torch.no_grad():
-        styled = style_model(img_t, 50)
-    def recover_image(img):
-        return (
-            (
-                img *
-                np.array([0.229, 0.224, 0.225]).reshape((1, 3, 1, 1)) +
-                np.array([0.485, 0.456, 0.406]).reshape((1, 3, 1, 1))
-            ).transpose(0, 2, 3, 1) *
-            255.
-        ).clip(0, 255).astype(np.uint8)
-    plt.imshow(recover_image(styled.detach().cpu().numpy())[0])
-test()
+    #plt.imshow(img)
+    img_t = transform(img).unsqueeze(0)
+    
+    #for style_choice in range(6):
+    if True:
+        with torch.no_grad():
+            styled = style_model(img_t, style_choice)
+        def recover_image(img):
+            return (
+                (
+                    img *
+                    np.array([0.229, 0.224, 0.225]).reshape((1, 3, 1, 1)) +
+                    np.array([0.485, 0.456, 0.406]).reshape((1, 3, 1, 1))
+                ).transpose(0, 2, 3, 1) *
+                255.
+            ).clip(0, 255).astype(np.uint8)
+        #plt.imshow(recover_image(styled.detach().cpu().numpy())[0])
+        return recover_image(styled.detach().cpu().numpy())[0]
+#style_choice = 3
+#Image.fromarray(test(style_choice)).save(f'styled_{style_choice}.jpg')

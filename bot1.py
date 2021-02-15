@@ -20,6 +20,17 @@ from urllib.parse import urljoin
 from PIL import Image
 import io
 import os
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
+
+from inference import JohnsonMultiStyleNet, transform, recover_image, transform_inference
+import torch
+
+
+DEVICE = torch.device('cpu')
+style_num = 6
+style_model = JohnsonMultiStyleNet(style_num)
+style_model.eval()
+
 
 
 webhook_using = False
@@ -30,12 +41,14 @@ else:
     with open('API.TOKEN', 'r') as f:
         API_TOKEN = f.readline().split()[0]
 
+webhook_using = False
+
 #webhook setting
 
 WEBHOOK_HOST = 'https://telegabot67.heroku.com'
 WEBHOOK_PATH = '/webhook/'+API_TOKEN
 WEBHOOK_URL = urljoin(WEBHOOK_HOST, WEBHOOK_PATH)
-print(f'wh_url=\n{WEBHOOK_URL}, type({type(WEBHOOK_URL)}) ?\n{WEBHOOK_HOST + WEBHOOK_PATH}')
+#print(f'wh_url=\n{WEBHOOK_URL}, type({type(WEBHOOK_URL)}) ?\n{WEBHOOK_HOST + WEBHOOK_PATH}')
 
 #webapp setting
 if webhook_using:
@@ -54,13 +67,13 @@ if webhook_using:
 
 async def on_startup(dp):
     logging.warning('++++starting webhook')
-   # await bot.delete_webhook()
+    await bot.delete_webhook()
     await bot.set_webhook(WEBHOOK_URL)
     
 async def on_shutdown(dp):
     logging.warning('+++Shutting down...')
     
-#    await bot.delete_webhook()
+    await bot.delete_webhook()
     await dp.storage.close()
     await dp.storage.wait_closed()
     
@@ -70,19 +83,39 @@ async def on_shutdown(dp):
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
     await message.reply(f"Hi!\nI'm EchoBot!\nos.name={os.name}")
+    
 @dp.message_handler()
 async def echo(message: types.Message):
-    # old style:
-    # await bot.send_message(message.chat.id, message.text)
     mes_to_answ = ''
     mes_to_answ += ' date: ' + str(message.date)
-    await message.answer(mes_to_answ)
-async def start_wh():
-    await bot.set_webhook(WEBHOOK_URL)
+    #await message.answer(mes_to_answ)
+    img = Image.open('test.jpg')
+    style_choice = 0
+    fp = io.BytesIO()
+    Image.fromarray(test(img, style_choice)).save(fp, 'JPEG')
+    await bot.send_photo(message.from_user.id, fp.getvalue(),
+                         reply_to_message_id=message.message_id)
+    
+@dp.message_handler(content_types=['photo'])
+async def photo_reply(message: types.Message):
+    await message.photo[-1].download('test.jpg')
+    fid=message.photo[-1].file_id
+    #print(fid)
+    await message.answer(f'Get photo! {fid}')
+
+def test(img, style_choice=0):
+    #img = Image.open(r'test.jpg')
+    #plt.imshow(img)
+    img_t = transform_inference(img).unsqueeze(0)
+    
+    with torch.no_grad():
+        styled = style_model(img_t, style_choice)
+
+        return recover_image(styled.detach().cpu().numpy())[0]
+    
 if __name__ == '__main__':
     if webhook_using:
         logging.warning(f'---->trying start webhook:{WEBHOOK_PATH}, {WEBAPP_HOST}, {WEBAPP_PORT}')
-        start_wh()    
         start_webhook(dispatcher=dp,
                       webhook_path=WEBHOOK_PATH,
                       on_startup=on_startup,
