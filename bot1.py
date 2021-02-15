@@ -27,7 +27,7 @@ import torch
 
 
 DEVICE = torch.device('cpu')
-style_num = 6
+style_num = 11
 style_model = JohnsonMultiStyleNet(style_num)
 style_model.eval()
 
@@ -90,9 +90,9 @@ async def echo(message: types.Message):
     mes_to_answ += ' date: ' + str(message.date)
     #await message.answer(mes_to_answ)
     img = Image.open('test.jpg')
-    style_choice = 0
+    #style_choice = 0
     fp = io.BytesIO()
-    Image.fromarray(test(img, style_choice)).save(fp, 'JPEG')
+    Image.fromarray(test(img)).save(fp, 'JPEG')
     await bot.send_photo(message.from_user.id, fp.getvalue(),
                          reply_to_message_id=message.message_id)
     

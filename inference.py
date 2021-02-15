@@ -282,7 +282,7 @@ class JohnsonMultiStyleNet(torch.nn.Module):
         self.deconv3 = ConvLayer(32, 3, kernel_size=9, stride=1)
         # Non-linearities
         self.relu = torch.nn.ReLU()
-        model_pth = f'multistyle_{style_number}.pth'
+        model_pth = f'multistyle256_{style_number}.pth'
         if Path(model_pth).exists():
             print('loading model...')
             self.load_state_dict(torch.load(model_pth, map_location=DEVICE))
@@ -322,7 +322,9 @@ class ResidualMultiStyleBlock(torch.nn.Module):
         out = self.in2[style](self.conv2(out))
         out = out + residual
         return out
-def test(style_choice=0):
+def test(style_choice=None):
+    if style_choice is None:
+        style_choice = np.random.randint(style_num)
     style_model = JohnsonMultiStyleNet(6)
     style_model.eval()
     img = Image.open(r'test.jpg')
