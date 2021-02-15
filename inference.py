@@ -5,8 +5,8 @@ Created on Sun Feb 14 22:30:55 2021
 @author: Kobap
 """
 
-from torch import nn
 import torch
+from torch import nn
 from torchvision import transforms
 from torch.nn import ModuleList, InstanceNorm2d
 import numpy as np
