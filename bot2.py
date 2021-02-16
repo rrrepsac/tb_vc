@@ -10,7 +10,11 @@ from aiogram.utils.executor import start_webhook
 BOT_TOKEN = os.getenv('API_TOKEN')
 if not BOT_TOKEN:
     print('You have forgot to set BOT_TOKEN')
-    quit()
+    with open('API.TOKEN', 'r') as f:
+        BOT_TOKEN = f.readline().split()[0]
+        logging.warning(f'token = {BOT_TOKEN}')
+    if not BOT_TOKEN:
+        quit()
 
 HEROKU_APP_NAME = 'telegabot67'  # os.getenv('HEROKU_APP_NAME')
 
@@ -73,5 +77,7 @@ def set_hook():
     bot.close()
 
 
-def start():
+#def start():
+    #main()
+if __name__ == '__main__':
     main()

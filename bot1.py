@@ -41,7 +41,7 @@ else:
     with open('API.TOKEN', 'r') as f:
         API_TOKEN = f.readline().split()[0]
 
-webhook_using = False
+webhook_using = True
 
 #webhook setting
 
