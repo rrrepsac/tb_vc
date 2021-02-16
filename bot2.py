@@ -5,6 +5,13 @@ from aiogram import Bot, types
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils.executor import start_webhook
+from inference import JohnsonMultiStyleNet, transform, make_style
+from PIL import Image
+import io
+
+style_num = 11
+style_model = JohnsonMultiStyleNet(style_num)
+style_model.eval()
 
 
 BOT_TOKEN = os.getenv('API_TOKEN')
@@ -36,9 +43,15 @@ dp.middleware.setup(LoggingMiddleware())
 
 @dp.message_handler()
 async def echo(message: types.Message):
-    logging.warning(f'Recieved a message from {message.from_user}')
-    await bot.send_message(message.chat.id, message.text)
-
+    mes_to_answ = ''
+    mes_to_answ += ' date: ' + str(message.date)
+    #await message.answer(mes_to_answ)
+    img = Image.open('test.jpg')
+    #style_choice = 0
+    fp = io.BytesIO()
+    Image.fromarray(make_style(img, style_model)).save(fp, 'JPEG')
+    await bot.send_photo(message.from_user.id, fp.getvalue(),
+                         reply_to_message_id=message.message_id)
 
 async def on_startup(dp):
     logging.warning(
@@ -62,19 +75,19 @@ def main():
     )
     
 
-def set_hook():
-    bot = Bot(token=BOT_TOKEN)
+#def set_hook():
+#    bot = Bot(token=BOT_TOKEN)
 
-    async def hook_set():
-        if not HEROKU_APP_NAME:
-            print('You have forgot to set HEROKU_APP_NAME')
-            quit()
-        await bot.set_webhook(WEBHOOK_URL)
-        print(await bot.get_webhook_info())
+#     async def hook_set():
+#        if not HEROKU_APP_NAME:
+#            print('You have forgot to set HEROKU_APP_NAME')
+#            quit()
+#        await bot.set_webhook(WEBHOOK_URL)
+#        print(await bot.get_webhook_info())
     
 
-    asyncio.run(hook_set())
-    bot.close()
+#    asyncio.run(hook_set())
+#    bot.close()
 
 
 #def start():

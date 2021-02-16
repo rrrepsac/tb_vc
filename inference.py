@@ -22,6 +22,9 @@ BatchNorm2d, InstanceNorm2d, UpsamplingNearest2d
 from PIL import Image
 import time
 
+DEVICE = torch.device('cpu')
+
+
 transform = transforms.Compose([
                                 transforms.Resize(256),
                                 transforms.ToTensor(),
