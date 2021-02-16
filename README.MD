@@ -1,2 +1,2 @@
 #MultiStyleTransfer
-trained 5 style in Kaggle ipynb
+trained 11 style in Kaggle ipynb
