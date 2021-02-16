@@ -53,6 +53,21 @@ async def echo(message: types.Message):
     await bot.send_photo(message.from_user.id, fp.getvalue(),
                          reply_to_message_id=message.message_id)
 
+@dp.message_handler(content_types=['photo'])
+async def photo_reply(message: types.Message):
+    fpin = io.BytesIO()
+    fpout = io.BytesIO()
+    await message.photo[-1].download(fpin)
+    
+    img = Image.open(fpin)
+    styled = make_style(img, style_model)
+    Image.fromarray(styled).save(fpout, 'JPEG')
+    
+    #fid=message.photo[-1].file_id
+    #print(fid)
+    await bot.send_photo(message.from_user.id, fpout.getvalue(),
+                         reply_to_message_id=message.message_id)
+
 async def on_startup(dp):
     logging.warning(
         'Starting connection. ')
