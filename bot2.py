@@ -41,6 +41,13 @@ dp = Dispatcher(bot)
 dp.middleware.setup(LoggingMiddleware())
 
 
+@dp.message_handler(commands=['start', 'help'])
+async def send_welcome(message: types.Message):
+    await message.reply(f"Hi!\nI'm MultiStyle Bot!\nI can transfer {style_model.get_style_number()} styles.\n\
+                        If you send me any message, I'll style test.jpg with random style and send it to you.\n\
+                        If I get a photo, I send back random styled photo.\n\
+                        You can specify the number of style from [0 to {style_model.get_style_number()-1}]")
+
 @dp.message_handler()
 async def echo(message: types.Message):
     mes_to_answ = ''

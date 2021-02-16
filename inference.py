@@ -22,13 +22,22 @@ BatchNorm2d, InstanceNorm2d, UpsamplingNearest2d
 from PIL import Image
 import time
 
+#DEVICE = (torch.device("cpu"), torch.device("cuda"))[torch.cuda.is_available()]
 DEVICE = torch.device('cpu')
 
+mean, std = (0.485, 0.456, 0.406), (0.229, 0.224, 0.225)
+#inv_mean, inv_std = zip(*[(-m/s, 1/s)for (m, s) in zip(mean, std)])
 
-transform = transforms.Compose([
-                                transforms.Resize(256),
+transform_norm = transforms.Normalize(mean, std, False)
+#transform_denorm=transforms.Normalize(inv_mean, inv_std, False)
+
+transform_inference = transforms.Compose([transforms.ToTensor(), transform_norm])
+
+
+transform_max_inference = transforms.Compose([
+                                transforms.Resize(600),
                                 transforms.ToTensor(),
-                                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+                                transform_norm
 ])
 
 def recover_image(img):
@@ -42,16 +51,6 @@ def recover_image(img):
     ).clip(0, 255).astype(np.uint8)
 
 
-#DEVICE = (torch.device("cpu"), torch.device("cuda"))[torch.cuda.is_available()]
-DEVICE = torch.device('cpu')
-
-mean, std = (0.485, 0.456, 0.406), (0.229, 0.224, 0.225)
-#inv_mean, inv_std = zip(*[(-m/s, 1/s)for (m, s) in zip(mean, std)])
-
-transform_norm = transforms.Normalize(mean, std, False)
-#transform_denorm=transforms.Normalize(inv_mean, inv_std, False)
-
-transform_inference = transforms.Compose([transforms.ToTensor(), transform_norm])
 
 
 class Residual(nn.Module):
@@ -330,13 +329,15 @@ class ResidualMultiStyleBlock(torch.nn.Module):
         out = out + residual
         return out
 def make_style(img, style_model, style_choice=None):
-    img_t = transform_inference(img).unsqueeze(0)
-
+    if max(img.size) <= 800:
+        img_t = transform_inference(img.convert('RGB')).unsqueeze(0)
+    else:
+        img_t = transform_max_inference(img.convert('RGB')).unsqueeze(0)
+ 
     style_num = style_model.get_style_number()
     if style_choice is None:
         style_choice = np.random.randint(style_num)
     style_model.eval()
-    img_t = transform(img).unsqueeze(0)
     with torch.no_grad():
         styled = style_model(img_t, style_choice)
     return recover_image(styled.detach().cpu().numpy())[0]
