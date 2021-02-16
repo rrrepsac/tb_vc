@@ -5,7 +5,7 @@ from aiogram import Bot, types
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils.executor import start_webhook
-from inference import JohnsonMultiStyleNet, transform, make_style
+from inference import JohnsonMultiStyleNet, make_style
 from PIL import Image
 import io
 
@@ -50,11 +50,7 @@ async def send_welcome(message: types.Message):
 
 @dp.message_handler()
 async def echo(message: types.Message):
-    mes_to_answ = ''
-    mes_to_answ += ' date: ' + str(message.date)
-    #await message.answer(mes_to_answ)
     img = Image.open('test.jpg')
-    #style_choice = 0
     fp = io.BytesIO()
     Image.fromarray(make_style(img, style_model)).save(fp, 'JPEG')
     await bot.send_photo(message.from_user.id, fp.getvalue(),
@@ -65,9 +61,13 @@ async def photo_reply(message: types.Message):
     fpin = io.BytesIO()
     fpout = io.BytesIO()
     await message.photo[-1].download(fpin)
-    
+    style_num = None
+    if message.text:
+        style_txt = [word for word in message.text.split() if word.is_digits()]
+        if style_txt:
+            style_num = int(style_txt[0]) % style_model.get_style_number()
     img = Image.open(fpin)
-    styled = make_style(img, style_model)
+    styled = make_style(img, style_model, style_num)
     Image.fromarray(styled).save(fpout, 'JPEG')
     
     #fid=message.photo[-1].file_id
