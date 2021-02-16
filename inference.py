@@ -257,8 +257,12 @@ class Pyramid(nn.Module):
 
 
 class JohnsonMultiStyleNet(torch.nn.Module):
+    def get_style_number(self):
+        return self.style_number
+        
     def __init__(self, style_number = 1):
         super().__init__()
+        self.style_number = style_number
         # Initial convolution layers
         self.conv1 = ConvLayer(3, 32, kernel_size=9, stride=1)
         self.in1 = ModuleList([InstanceNorm2d(32, affine=True) for _ in range(style_number)])        
@@ -322,29 +326,14 @@ class ResidualMultiStyleBlock(torch.nn.Module):
         out = self.in2[style](self.conv2(out))
         out = out + residual
         return out
-def test(style_choice=None):
+def make_style(img, style_model, style_choice=None):
+    img_t = transform_inference(img).unsqueeze(0)
+
+    style_num = style_model.get_style_number()
     if style_choice is None:
         style_choice = np.random.randint(style_num)
-    style_model = JohnsonMultiStyleNet(6)
     style_model.eval()
-    img = Image.open(r'test.jpg')
-    #plt.imshow(img)
     img_t = transform(img).unsqueeze(0)
-    
-    #for style_choice in range(6):
-    if True:
-        with torch.no_grad():
-            styled = style_model(img_t, style_choice)
-        def recover_image(img):
-            return (
-                (
-                    img *
-                    np.array([0.229, 0.224, 0.225]).reshape((1, 3, 1, 1)) +
-                    np.array([0.485, 0.456, 0.406]).reshape((1, 3, 1, 1))
-                ).transpose(0, 2, 3, 1) *
-                255.
-            ).clip(0, 255).astype(np.uint8)
-        #plt.imshow(recover_image(styled.detach().cpu().numpy())[0])
-        return recover_image(styled.detach().cpu().numpy())[0]
-#style_choice = 3
-#Image.fromarray(test(style_choice)).save(f'styled_{style_choice}.jpg')
+    with torch.no_grad():
+        styled = style_model(img_t, style_choice)
+    return recover_image(styled.detach().cpu().numpy())[0]

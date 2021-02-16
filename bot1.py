@@ -22,7 +22,7 @@ import io
 import os
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
-from inference import JohnsonMultiStyleNet, transform, recover_image, transform_inference
+from inference import JohnsonMultiStyleNet, transform, make_style
 import torch
 
 
@@ -92,26 +92,34 @@ async def echo(message: types.Message):
     img = Image.open('test.jpg')
     #style_choice = 0
     fp = io.BytesIO()
-    Image.fromarray(test(img)).save(fp, 'JPEG')
+    Image.fromarray(make_style(img, style_model)).save(fp, 'JPEG')
     await bot.send_photo(message.from_user.id, fp.getvalue(),
                          reply_to_message_id=message.message_id)
     
 @dp.message_handler(content_types=['photo'])
 async def photo_reply(message: types.Message):
-    await message.photo[-1].download('test.jpg')
-    fid=message.photo[-1].file_id
+    fpin = io.BytesIO()
+    fpout = io.BytesIO()
+    await message.photo[-1].download(fpin)
+    
+    img = Image.open(fpin)
+    styled = make_style(img, style_model)
+    Image.fromarray(styled).save(fpout, 'JPEG')
+    
+    #fid=message.photo[-1].file_id
     #print(fid)
-    await message.answer(f'Get photo! {fid}')
+    await bot.send_photo(message.from_user.id, fpout.getvalue(),
+                         reply_to_message_id=message.message_id)
 
-def test(img, style_choice=0):
+#def test(img, style_choice=0):
     #img = Image.open(r'test.jpg')
     #plt.imshow(img)
-    img_t = transform_inference(img).unsqueeze(0)
+ #   img_t = transform_inference(img).unsqueeze(0)
     
-    with torch.no_grad():
-        styled = style_model(img_t, style_choice)
+  #  with torch.no_grad():
+   #     styled = style_model(img_t, style_choice)
 
-        return recover_image(styled.detach().cpu().numpy())[0]
+    #    return recover_image(styled.detach().cpu().numpy())[0]
     
 if __name__ == '__main__':
     if webhook_using:
