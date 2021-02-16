@@ -12,7 +12,9 @@ import io
 style_num = 11
 style_model = JohnsonMultiStyleNet(style_num)
 style_model.eval()
-
+style_names = ['candy', 'cezanne', 'mosaic', 'picasso', 'rain-princess', 
+               'stary-night', 'undie', 'waterfall', 'kandinsky', 'mona lisa',
+               'peppa']
 
 BOT_TOKEN = os.getenv('API_TOKEN')
 if not BOT_TOKEN:
@@ -46,13 +48,17 @@ async def send_welcome(message: types.Message):
     await message.reply(f"Hi!\nI'm MultiStyle Bot!\nI can transfer {style_model.get_style_number()} styles.\n\
                         If you send me any message, I'll style test.jpg with random style and send it to you.\n\
                         If I get a photo, I send back random styled photo.\n\
-                        You can specify the number of style from [0 to {style_model.get_style_number()-1}]")
+                        You can specify the number of style from [0 to {style_model.get_style_number()-1}]\n
+                        {[(i, x) for (i, x) in enumerate(style_names)]}")
 
 @dp.message_handler()
 async def echo(message: types.Message):
     img = Image.open('test.jpg')
     fp = io.BytesIO()
-    Image.fromarray(make_style(img, style_model)).save(fp, 'JPEG')
+    styled, stc = make_style(img, style_model)
+    await message.answer(f'Your photo styled like {style_names[stc]}')
+    Image.fromarray(styled).save(fp, 'JPEG')
+    
     await bot.send_photo(message.from_user.id, fp.getvalue(),
                          reply_to_message_id=message.message_id)
 
@@ -67,7 +73,8 @@ async def photo_reply(message: types.Message):
         if style_txt:
             style_num = int(style_txt[0]) % style_model.get_style_number()
     img = Image.open(fpin)
-    styled = make_style(img, style_model, style_num)
+    styled, stc = make_style(img, style_model, style_num)
+    await message.answer(f'Your photo styled like {style_names[stc]}')
     Image.fromarray(styled).save(fpout, 'JPEG')
     
     #fid=message.photo[-1].file_id

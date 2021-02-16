@@ -99,6 +99,7 @@ async def echo(message: types.Message):
 async def photo_reply(message: types.Message):
     fpin = io.BytesIO()
     fpout = io.BytesIO()
+    await message.answer('I got your photo, wait for stylization...')
     await message.photo[-1].download(fpin)
     style_num = None
     if message.text:
