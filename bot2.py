@@ -48,7 +48,7 @@ async def send_welcome(message: types.Message):
     await message.reply(f"Hi!\nI'm MultiStyle Bot!\nI can transfer {style_model.get_style_number()} styles.\n\
                         If you send me any message, I'll style test.jpg with random style and send it to you.\n\
                         If I get a photo, I send back random styled photo.\n\
-                        You can specify the number of style from [0 to {style_model.get_style_number()-1}]\n
+                        You can specify the number of style from [0 to {style_model.get_style_number()-1}]\n\
                         {[(i, x) for (i, x) in enumerate(style_names)]}")
 
 @dp.message_handler()
