@@ -72,7 +72,7 @@ async def echo(message: types.Message):
 
 def get_first_num(string=None, module=None, default=None):
     if string and type(string) is str:
-        digits = [word for word in string.split() if word.is_digits()]
+        digits = [word for word in string.split() if word.isdigit()]
         if digits:
             num = int(digits[0])
         if module:
