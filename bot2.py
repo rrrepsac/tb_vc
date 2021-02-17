@@ -70,18 +70,24 @@ async def echo(message: types.Message):
     await bot.send_photo(message.from_user.id, fp.getvalue(),
                          reply_to_message_id=message.message_id)
 
+def get_first_num(str=None, module=None, default=None):
+    if str:
+        digits = [word for word in str.split() if word.is_digits()]
+        if digits:
+            num = int(digits[0])
+        if module:
+            num = num % module
+            return num
+    return default
 @dp.message_handler(content_types=['photo'])
 async def photo_reply(message: types.Message):
     fpin = io.BytesIO()
     fpout = io.BytesIO()
     style_num = np.random.randint(style_model.get_style_number())
     logging.warning(f'rand {style_num}')
-    if message.text:
-        style_txt = [word for word in message.text.split() if word.is_digits()]
-        if style_txt:
-            style_num = int(style_txt[0]) % style_model.get_style_number()
-            logging.warning(f'if {style_num}')
-    logging.warning(f'mestxt={message.text}')
+    style_num = get_first_num(message.text, style_model.get_style_number(), style_num)
+    style_num = get_first_num(message.caption, style_model.get_style_number(), style_num)
+    logging.warning(f'mestxt={message.text}, caption={message.caption}')
     await message.answer(f'Your photo will be styled like {style_names[style_num]}')
     await message.photo[-1].download(fpin)
     img = Image.open(fpin)
