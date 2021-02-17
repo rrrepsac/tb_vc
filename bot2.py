@@ -57,9 +57,10 @@ You can specify the number of style from [0 to {style_model.get_style_number()-1
 async def echo(message: types.Message):
     img = Image.open('test.jpg')
     fp = io.BytesIO()
-    await message.answer('Test.jpg will be random styled.')
-    styled, stc = make_style(img, style_model)
-    await message.answer(f'Styled like {style_names[stc]}')
+    style_num = np.random.randint(style_model.get_style_number())
+    await message.answer(f'Styled like {style_names[style_num]}')
+    styled, style_num = make_style(img, style_model, style_num)
+    
     Image.fromarray(styled).save(fp, 'JPEG')
     
     await bot.send_photo(message.from_user.id, fp.getvalue(),
