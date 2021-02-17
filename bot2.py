@@ -8,6 +8,7 @@ from aiogram.utils.executor import start_webhook
 from inference import JohnsonMultiStyleNet, make_style
 from PIL import Image
 import io
+import numpy as np
 
 style_num = 11
 style_model = JohnsonMultiStyleNet(style_num)
@@ -45,18 +46,20 @@ dp.middleware.setup(LoggingMiddleware())
 
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
-    await message.reply(f"Hi!\nI'm MultiStyle Bot!\nI can transfer {style_model.get_style_number()} styles.\n\
-                        If you send me any message, I'll style test.jpg with random style and send it to you.\n\
-                        If I get a photo, I send back random styled photo.\n\
-                        You can specify the number of style from [0 to {style_model.get_style_number()-1}]\n\
-                        {[(i, x) for (i, x) in enumerate(style_names)]}")
+    await message.reply(
+f"Hi!\nI'm MultiStyle Bot!\nI can transfer {style_model.get_style_number()} styles.\n\
+If you send me any message, I'll style test.jpg with random style and send it to you.\n\
+If I get a photo, I send back random styled photo.\n\
+You can specify the number of style from [0 to {style_model.get_style_number()-1}]\n\
+{[(i, x) for (i, x) in enumerate(style_names)]}")
 
 @dp.message_handler()
 async def echo(message: types.Message):
     img = Image.open('test.jpg')
     fp = io.BytesIO()
+    await message.answer('Test.jpg will be random styled.')
     styled, stc = make_style(img, style_model)
-    await message.answer(f'Your photo styled like {style_names[stc]}')
+    await message.answer(f'Styled like {style_names[stc]}')
     Image.fromarray(styled).save(fp, 'JPEG')
     
     await bot.send_photo(message.from_user.id, fp.getvalue(),
@@ -66,15 +69,15 @@ async def echo(message: types.Message):
 async def photo_reply(message: types.Message):
     fpin = io.BytesIO()
     fpout = io.BytesIO()
-    await message.photo[-1].download(fpin)
-    style_num = None
+    style_num = np.random.randint(style_model.get_style_number())
     if message.text:
         style_txt = [word for word in message.text.split() if word.is_digits()]
         if style_txt:
             style_num = int(style_txt[0]) % style_model.get_style_number()
+    await message.answer(f'Your photo will be styled like {style_names[style_num]}')
+    await message.photo[-1].download(fpin)
     img = Image.open(fpin)
-    styled, stc = make_style(img, style_model, style_num)
-    await message.answer(f'Your photo styled like {style_names[stc]}')
+    styled, style_num = make_style(img, style_model, style_num)
     Image.fromarray(styled).save(fpout, 'JPEG')
     
     #fid=message.photo[-1].file_id
