@@ -10,6 +10,10 @@ from PIL import Image
 import io
 import numpy as np
 
+#KMP_DUPLICATE_LIB_OK=TRUE
+#os.environ['KMP_DUPLICATE_LIB_OK']='TRUE'
+
+
 style_num = 11
 style_model = JohnsonMultiStyleNet(style_num)
 style_model.eval()

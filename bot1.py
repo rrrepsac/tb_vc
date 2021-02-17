@@ -20,7 +20,7 @@ from urllib.parse import urljoin
 from PIL import Image
 import io
 import os
-os.environ['KMP_DUPLICATE_LIB_OK']='True'
+#os.environ['KMP_DUPLICATE_LIB_OK']='TRUE'
 
 from inference import JohnsonMultiStyleNet, make_style
 import torch
