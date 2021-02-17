@@ -62,7 +62,7 @@ async def echo(message: types.Message):
     img = Image.open('test.jpg')
     fp = io.BytesIO()
     style_num = np.random.randint(style_model.get_style_number())
-    await message.answer(f'Styled like {style_names[style_num]}')
+    await message.answer(f'Styling like {style_names[style_num]}')
     styled, style_num = make_style(img, style_model, style_num)
     
     Image.fromarray(styled).save(fp, 'JPEG')
@@ -70,9 +70,9 @@ async def echo(message: types.Message):
     await bot.send_photo(message.from_user.id, fp.getvalue(),
                          reply_to_message_id=message.message_id)
 
-def get_first_num(str=None, module=None, default=None):
-    if str:
-        digits = [word for word in str.split() if word.is_digits()]
+def get_first_num(string=None, module=None, default=None):
+    if string and type(string) is str:
+        digits = [word for word in string.split() if word.is_digits()]
         if digits:
             num = int(digits[0])
         if module:
@@ -85,9 +85,9 @@ async def photo_reply(message: types.Message):
     fpout = io.BytesIO()
     style_num = np.random.randint(style_model.get_style_number())
     logging.warning(f'rand {style_num}')
+    logging.warning(f'mestxt={message.text}, caption={message.caption}')
     style_num = get_first_num(message.text, style_model.get_style_number(), style_num)
     style_num = get_first_num(message.caption, style_model.get_style_number(), style_num)
-    logging.warning(f'mestxt={message.text}, caption={message.caption}')
     await message.answer(f'Your photo will be styled like {style_names[style_num]}')
     await message.photo[-1].download(fpin)
     img = Image.open(fpin)
