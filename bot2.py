@@ -71,14 +71,21 @@ async def photo_reply(message: types.Message):
     fpin = io.BytesIO()
     fpout = io.BytesIO()
     style_num = np.random.randint(style_model.get_style_number())
+    logging.warning(f'rand {style_num}')
     if message.text:
         style_txt = [word for word in message.text.split() if word.is_digits()]
         if style_txt:
             style_num = int(style_txt[0]) % style_model.get_style_number()
+            logging.warning(f'if {style_num}')
+    logging.warning(f'mestxt={message.text}')
     await message.answer(f'Your photo will be styled like {style_names[style_num]}')
     await message.photo[-1].download(fpin)
     img = Image.open(fpin)
+    logging.warning(f'call {style_num}')
+
     styled, style_num = make_style(img, style_model, style_num)
+        logging.warning(f'get {style_num}')
+
     Image.fromarray(styled).save(fpout, 'JPEG')
     
     #fid=message.photo[-1].file_id
