@@ -84,7 +84,7 @@ async def photo_reply(message: types.Message):
     logging.warning(f'call {style_num}')
 
     styled, style_num = make_style(img, style_model, style_num)
-        logging.warning(f'get {style_num}')
+    logging.warning(f'get {style_num}')
 
     Image.fromarray(styled).save(fpout, 'JPEG')
     
